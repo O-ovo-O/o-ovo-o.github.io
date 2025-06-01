@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filterable Table</title>
+    <link rel="stylesheet" href="assets/tablefilter.css">
+</head>
+<body>
+    <h2>Filterable Table</h2>
+    <div id="tableContainer"></div>
+
+    <script src="assets/tablefilter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script>
+        // Function to load the Markdown file and convert it to HTML
+        function loadMarkdown() {
+            fetch('data/table.md')
+                .then(response => response.text())
+                .then(markdown => {
+                    // Convert Markdown to HTML using Showdown
+                    const converter = new showdown.Converter();
+                    const html = converter.makeHtml(markdown);
+                    document.getElementById('tableContainer').innerHTML = html;
+
+                    // Initialize TableFilter
+                    var tf = new TableFilter('itemTable', {
+                        base_path: 'assets/',
+                        filters_row_index: 0,
+                        col_0: 'select', // Filter for the first column (Item)
+                        col_1: 'select', // Filter for the second column (Category)
+                        col_2: 'select', // Filter for the third column (Price)
+                    });
+                    tf.init();
+                })
+                .catch(error => console.error('Error loading Markdown:', error));
+        }
+
+        // Load the Markdown table on page load
+        window.onload = loadMarkdown;
+    </script>
+</body>
+</html>
+
