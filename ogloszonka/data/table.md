@@ -6,6 +6,6 @@
 
 [u1]: https://wykop.pl/ludzie/Oo-oO
 
-[a1]: https://o-ovo-o.github.io/ogloszonka/data/data/1
+[a1]: https://o-ovo-o.github.io/ogloszonka/data/data/1.html
 [a2]: https://o-ovo-o.github.io/ogloszonka/data/data/2/2.html
 
