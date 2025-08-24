@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="{{ '/assets/tablefilter.css' | relative_url }}">
+</head>
+<body>
+    <h2>{{ page.title }}</h2>
+    <div id="tableContainer"></div>
+
+    <script src="{{ '/assets/tablefilter.js' | relative_url }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script>
+        function loadMarkdown() {
+            fetch('data/table.md')
+                .then(response => response.text())
+                .then(markdown => {
+                    const converter = new showdown.Converter();
+                    const html = converter.makeHtml(markdown);
+
+		    const tempDiv = document.createElement('div');
+		    tempDiv.innerHTML = html;
+
+		    // Extract the table from the temporary element
+		    const table = tempDiv.querySelector('table');
+		    if (table) {
+			document.getElementById('tableContainer').innerHTML = table.outerHTML;
+
+			// Initialize TableFilter after the table has been added to the DOM
+			initializeTableFilter();
+		    } else {
+			console.error('No table found in the Markdown content.');
+		    }
+                })
+                .catch(error => console.error('Error loading Markdown:', error));
+        }
+
+        // Function to initialize TableFilter
+        function initializeTableFilter() {
+            var tf = new TableFilter('itemTable', {
+                base_path: '{{ '/assets/' | relative_url }}',
+                filters_row_index: 0,
+                col_0: 'select', // Filter for the first column (Item)
+                col_1: 'select', // Filter for the second column (Category)
+                col_2: 'select', // Filter for the third column (Price)
+            });
+            tf.init();
+        }
+
+        // Load the Markdown table on page load
+        window.onload = loadMarkdown;
+    </script>
+</body>
+</html>
+

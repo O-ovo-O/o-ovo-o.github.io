@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista rzeczy ktore mirki by chcialy wymienic</title>
+    <link rel="stylesheet" href="assets/tablefilter.css">
+</head>
+<body>
+    <h2>lista rzeczy ktore mirki chca wymienic<a href=https://wykop.pl/tag/mirkoogloszonka>#mirkoogloszonka</a></h2>
+    <div id="tableContainer"></div>
+
+    <div id="linksContainer"></div>
+
+    <script src="assets/tablefilter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script>
+        function loadMarkdown() {
+            fetch('data/table.md')
+                .then(response => response.text())
+                .then(markdown_to_html => {
+                    const converter = new showdown.Converter();
+                    converter.setOption('tables', true);
+                    const html = converter.makeHtml(markdown_to_html);
+
+		    const tempDiv = document.createElement('div');
+		    tempDiv.innerHTML = html;
+
+		    const table = tempDiv.querySelector('table');
+		    table.id = "itemTable";
+		    if (table) {
+			document.getElementById('tableContainer').innerHTML = table.outerHTML;
+
+			initializeTableFilter();
+		    } else {
+			console.error('No table found in the Markdown content.');
+		    }
+
+		})
+		.catch(error => console.error('Error loading Markdown:', error));
+        }
+
+    // 1. alternating rows: tak
+    // 2. case sensitive raczej nie, col_widths-moze-tak
+    // 3. tagi=albo checklist albo multiple
+    // 4. ignore_diacritics tak,  no_results_message=true
+    // 5. watermark = hint dla inputa
+    // https://www.tablefilter.com/examples.html
+
+        function initializeTableFilter() {
+
+        /*
+                // wygeneruj se liste tagow
+                const uniqueValues = new Set();
+                const rows = document.querySelectorAll('#itemTable tbody tr');
+
+                rows.forEach(row => {
+                const cellValue = row.cells[1].textContent.trim();
+                if (cellValue) {
+                    cellValue.split(',').forEach(value => uniqueValues.add(value.trim()));
+                } else {
+                    uniqueValues.add('-');
+                }
+                });
+                const filterOptions = Array.from(uniqueValues).sort();
+                // col_0: 'none', // freetext filter
+                // col_1: 'checklist',
+                // col_2: 'none', // TODO: range
+
+        */
+
+               var tf = new TableFilter('itemTable', {
+			base_path: 'assets/',
+			filters_row_index: 0,
+			headers_row_index: 1,
+			// col_1: 'select', // values: filterOptions  -- tak by bylo elegancko, ale zdaje sie nie jest to obslugiwane, a ja rzezbic w js nie bede
+			col_3: 'none',
+			// col_4: 'select',  // warto tylko jeśli custom option z zakresami, inaczej to pisanie
+			alternating_rows: true,
+			ignore_diacritics: true,
+			watermark: ["nazwa", "tag", "użyszkodnik", "", "np: <299"],
+			no_results_message: true,
+
+			col_types: [
+			   'string',
+			   'string',
+			   'string',
+			   'string',
+			   { type: 'number' },
+			],
+
+		    /*
+			custom_options: {
+			    cols:[2,4],
+			    texts: [
+				[
+				    '', '0 - 50', '51 - 299',
+				    '300 - 550', '551 - 1000', '1001 - 9999',
+				    'niepusty'
+				]
+			    ],
+			    values: [
+				[
+				    '', '>0 && <=50', '>50 && <=299',
+				    '>299 && <=550', '>550 && <=1000', '>1000 && <=9999',
+				    '!'
+				]
+			    ],
+			    sorts: [false]
+			},
+			extensions: [{ name: 'sort' }]
+		 */
+               });
+               tf.init();
+          }
+
+          window.onload = loadMarkdown;
+    </script>
+</body>
+</html>
+
